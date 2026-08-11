@@ -13,3 +13,8 @@ output "cosmosdb_sql_database_name" {
   description = "Outputs the name of the CosmosDB SQL Database"
   value       = azurerm_cosmosdb_sql_database.cosmosdb-sql-database.name
 }
+
+output "cosmosdb_account_id" {
+  description = "Outputs the id of the CosmosDB Account"
+  value       = azurerm_cosmosdb_account.cosmosdb_account.id
+}

@@ -7,6 +7,10 @@ on:
     branches: [main, master]
 jobs:
   docs:
+    # Fork PRs get a read-only GITHUB_TOKEN with no push access to the fork's branch, so
+    # the push-back step below would fail. Skip the whole job for fork PRs instead of
+    # failing CI on it - same-repo branches (the common case) are unaffected.
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.1

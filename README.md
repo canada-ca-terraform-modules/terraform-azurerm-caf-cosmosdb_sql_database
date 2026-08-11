@@ -44,6 +44,7 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_cosmosdb_account_id"></a> [cosmosdb\_account\_id](#output\_cosmosdb\_account\_id) | Outputs the id of the CosmosDB Account |
 | <a name="output_cosmosdb_sql_database_id"></a> [cosmosdb\_sql\_database\_id](#output\_cosmosdb\_sql\_database\_id) | Outputs the id of the CosmosDB SQL Database |
 | <a name="output_cosmosdb_sql_database_name"></a> [cosmosdb\_sql\_database\_name](#output\_cosmosdb\_sql\_database\_name) | Outputs the name of the CosmosDB SQL Database |
 | <a name="output_cosmosdb_sql_database_object"></a> [cosmosdb\_sql\_database\_object](#output\_cosmosdb\_sql\_database\_object) | Outputs the entire CosmosDB SQL Database object |
@@ -67,7 +68,7 @@ No modules.
 
 ```hcl
 module "cosmosdb_sql_databases" {
-  source   = "github.com/canada-ca-terraform-modules/terraform-azurerm-caf-cosmosdb_sql_databaseV2.git?ref=v1.1.0"
+  source   = "github.com/canada-ca-terraform-modules/terraform-azurerm-caf-cosmosdb_sql_databaseV2.git?ref=v2.0.0"
   for_each = var.cosmosdb_sql_databases
 
   env                          = var.env

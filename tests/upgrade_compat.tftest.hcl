@@ -1,8 +1,20 @@
-# Purpose: catch breaking resource changes introduced by the azurerm ~> 4.0 -> ~> 5.0
-# provider bump before real infra is touched.
-# How: run blocks share state — apply creates mock state; next plan runs against it.
-# If the upgraded provider constraint caused an address change or accidental destroy,
-# it would appear in the second run's plan.
+# Purpose: prove a pre-upgrade-shaped cosmosdb_sql_database_config still applies
+# cleanly, and stays in-place (no destroy/recreate), when a caller adds one new
+# optional argument on top of it.
+#
+# Scope / limitation: `terraform test` resolves a single provider version for the
+# whole file from this repo's own providers.tf (now pinned to azurerm ~> 5.0) - it
+# cannot mix two provider major versions in one test file, so this does NOT by
+# itself validate real 4.x-state -> 5.x-provider migration. That live-state check
+# is done separately via a two-phase terraform-module-upgrade-probe run (baseline
+# apply under azurerm 4.81.0, then a second plan against that same state under
+# this upgraded code / azurerm 5.0.1) against a real Azure subscription.
+#
+# How: run blocks share state - apply creates mock state; the next run plans
+# against it. baseline_apply's own resource id is captured and compared against
+# the second run's planned id - a resource being replaced re-computes id as
+# unknown, which fails the equality assertion (or errors as an unknown-value
+# condition), so recreation cannot silently pass as a no-op.
 mock_provider "azurerm" {}
 
 variables {
@@ -37,7 +49,7 @@ run "baseline_apply" {
   }
 }
 
-# Step 2: plan the upgraded provider-constrained code against that state, adding an
+# Step 2: plan the same (current, ~> 5.0-pinned) code against that state, adding an
 # optional argument (throughput) to prove additive changes remain in-place, not destroy+create
 run "upgrade_plan_no_replacement" {
   command = plan # plans against state from baseline_apply
@@ -59,5 +71,18 @@ run "upgrade_plan_no_replacement" {
   assert {
     condition     = azurerm_cosmosdb_sql_database.cosmosdb-sql-database.throughput == 400
     error_message = "throughput must be set to the provided value"
+  }
+
+  # No-replacement guard: a replaced resource re-computes id as unknown at plan
+  # time, so this equality either fails outright or errors as an unknown-value
+  # condition - either way the test fails instead of silently passing.
+  assert {
+    condition     = azurerm_cosmosdb_sql_database.cosmosdb-sql-database.id == run.baseline_apply.cosmosdb_sql_database_id
+    error_message = "Resource must be updated in-place, not destroyed/recreated (id changed)"
+  }
+
+  assert {
+    condition     = azurerm_cosmosdb_account.cosmosdb_account.id == run.baseline_apply.cosmosdb_account_id
+    error_message = "CosmosDB account must be updated in-place, not destroyed/recreated (id changed)"
   }
 }
