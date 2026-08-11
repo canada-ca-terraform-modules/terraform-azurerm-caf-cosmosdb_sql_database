@@ -15,11 +15,13 @@ variable "env" {
   type        = string
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "group" {
   description = "(Required) Character string defining the group for the target subscription"
   type        = string
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "project" {
   description = "(Required) Character string defining the project for the target subscription"
   type        = string

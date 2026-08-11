@@ -8,6 +8,7 @@ variable "cosmosdb_sql_databases" {
   default     = {}
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "resource_groups" {
   description = "Map of resource group objects"
   type        = any
@@ -15,7 +16,7 @@ variable "resource_groups" {
 }
 
 module "cosmosdb_sql_databases" {
-  source   = "github.com/canada-ca-terraform-modules/terraform-azurerm-caf-cosmosdb_sql_databaseV2.git?ref=v1.0.0"
+  source   = "github.com/canada-ca-terraform-modules/terraform-azurerm-caf-cosmosdb_sql_databaseV2.git?ref=v1.1.0"
   for_each = var.cosmosdb_sql_databases
 
   env                          = var.env

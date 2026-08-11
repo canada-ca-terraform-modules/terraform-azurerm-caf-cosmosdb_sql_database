@@ -7,33 +7,47 @@ Manages a CosmosDB SQL Database within a Cosmos DB Account, following the SSC Cl
 
 | Name | Version |
 |------|---------|
-| terraform | >= 1.9 |
-| azurerm | ~> 4.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 5.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| azurerm | ~> 4.0 |
+| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 5.0.1 |
+
+## Modules
+
+No modules.
 
 ## Resources
 
 | Name | Type |
 |------|------|
+| [azurerm_cosmosdb_account.cosmosdb_account](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cosmosdb_account) | resource |
 | [azurerm_cosmosdb_sql_database.cosmosdb-sql-database](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/cosmosdb_sql_database) | resource |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| env | 4-character GC governance prefix: `<dept(2)><env(1)><region(1)>` e.g. `ScPc` = SSC Production Azure Canada Central | `string` | n/a | yes |
-| group | Character string defining the group for the target subscription | `string` | n/a | yes |
-| project | Character string defining the project for the target subscription | `string` | n/a | yes |
-| userDefinedString | User defined portion of the CosmosDB SQL Database name | `string` | n/a | yes |
-| cosmosdb\_sql\_database\_config | Object containing all CosmosDB SQL Database configuration parameters | `any` | `{}` | no |
-| location | Azure location for the CosmosDB SQL Database | `string` | `"canadacentral"` | no |
-| resource\_groups | Resource group object map | `any` | `{}` | no |
-| tags | Tags that will be applied to every associated resource | `map(string)` | `{}` | no |
+| <a name="input_cosmosdb_sql_database_config"></a> [cosmosdb\_sql\_database\_config](#input\_cosmosdb\_sql\_database\_config) | Object containing all CosmosDB SQL Database configuration parameters | `any` | `{}` | no |
+| <a name="input_env"></a> [env](#input\_env) | (Required) 4-character GC governance prefix: <dept(2)><env(1)><region(1)> e.g. ScPc = SSC Production Azure Canada Central | `string` | n/a | yes |
+| <a name="input_group"></a> [group](#input\_group) | (Required) Character string defining the group for the target subscription | `string` | n/a | yes |
+| <a name="input_location"></a> [location](#input\_location) | Azure location for the CosmosDB SQL Database | `string` | `"canadacentral"` | no |
+| <a name="input_project"></a> [project](#input\_project) | (Required) Character string defining the project for the target subscription | `string` | n/a | yes |
+| <a name="input_resource_groups"></a> [resource\_groups](#input\_resource\_groups) | (Required) Resource group object map | `any` | `{}` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Tags that will be applied to every associated resource | `map(string)` | `{}` | no |
+| <a name="input_userDefinedString"></a> [userDefinedString](#input\_userDefinedString) | (Required) User defined portion of the CosmosDB SQL Database name | `string` | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| <a name="output_cosmosdb_sql_database_id"></a> [cosmosdb\_sql\_database\_id](#output\_cosmosdb\_sql\_database\_id) | Outputs the id of the CosmosDB SQL Database |
+| <a name="output_cosmosdb_sql_database_name"></a> [cosmosdb\_sql\_database\_name](#output\_cosmosdb\_sql\_database\_name) | Outputs the name of the CosmosDB SQL Database |
+| <a name="output_cosmosdb_sql_database_object"></a> [cosmosdb\_sql\_database\_object](#output\_cosmosdb\_sql\_database\_object) | Outputs the entire CosmosDB SQL Database object |
+<!-- END_TF_DOCS -->
 
 ### `cosmosdb_sql_database_config` object
 
@@ -47,21 +61,13 @@ Manages a CosmosDB SQL Database within a Cosmos DB Account, following the SSC Cl
 | autoscale\_settings | Autoscale throughput block. Conflicts with `throughput`. Must be set on creation. | `object` | `null` | no |
 | autoscale\_settings.max\_throughput | Max RU/s: 1,000–1,000,000 in increments of 1,000 | `number` | `null` | no |
 
-## Outputs
-
-| Name | Description |
-|------|-------------|
-| cosmosdb\_sql\_database\_id | The ID of the CosmosDB SQL Database |
-| cosmosdb\_sql\_database\_name | The name of the CosmosDB SQL Database |
-| cosmosdb\_sql\_database\_object | The full CosmosDB SQL Database object (sensitive) |
-
 ## Usage
 
 ### ESLZ module block
 
 ```hcl
 module "cosmosdb_sql_databases" {
-  source   = "github.com/canada-ca-terraform-modules/terraform-azurerm-caf-cosmosdb_sql_databaseV2.git?ref=v1.0.0"
+  source   = "github.com/canada-ca-terraform-modules/terraform-azurerm-caf-cosmosdb_sql_databaseV2.git?ref=v1.1.0"
   for_each = var.cosmosdb_sql_databases
 
   env                          = var.env
@@ -132,4 +138,3 @@ To use a custom name, set `cosmosdb_sql_database_config.name`.
 - **Throughput mode is immutable after creation.** Switching between manual throughput and autoscale requires a destroy-apply.
 - **Do not set `throughput`** when the CosmosDB account has the `EnableServerless` capability.
 - `throughput` and `autoscale_settings` are mutually exclusive.
-<!-- END_TF_DOCS -->
