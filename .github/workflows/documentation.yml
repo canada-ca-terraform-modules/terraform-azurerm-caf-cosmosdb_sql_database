@@ -1,0 +1,25 @@
+# Auto-generates <!-- BEGIN_TF_DOCS --> ... <!-- END_TF_DOCS --> in README.md on every PR
+# README.md must contain the inject markers above for terraform-docs to work
+name: Generate terraform docs
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main, master]
+jobs:
+  docs:
+    # Fork PRs get a read-only GITHUB_TOKEN with no push access to the fork's branch, so
+    # the push-back step below would fail. Skip the whole job for fork PRs instead of
+    # failing CI on it - same-repo branches (the common case) are unaffected.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Render terraform docs and push back to PR branch
+        uses: terraform-docs/gh-actions@v1.4.1
+        with:
+          working-dir: .
+          output-file: README.md
+          output-method: inject
+          git-push: "true"
