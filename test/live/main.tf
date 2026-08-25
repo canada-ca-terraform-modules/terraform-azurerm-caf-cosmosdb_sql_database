@@ -41,3 +41,4 @@ module "cosmosdb_sql_database" {
     { account_name = "${var.cosmosdb_sql_database_config.account_name}${var.pr_number}" }
   )
 }
+# live-test workflow wired 2026-08-25
